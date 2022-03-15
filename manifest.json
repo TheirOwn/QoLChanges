@@ -1,0 +1,8 @@
+{
+    "name": "QoLChanges",
+    "version_number": "1.1.0",
+    "website_url": "",
+    "description": "Adds a bunch of quality of life updates.",
+    "dependencies": [
+    ]
+}
