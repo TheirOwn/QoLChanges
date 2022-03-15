@@ -4,9 +4,10 @@ Adds a bunch of Quality of Life Changes.
 
 # Features
 - [X] Tower Range circles/squares on hover.
+- [X] Default Tower Settings
 - [ ] Copy/Paste Tower Settings (WIP)
-- [X] Default Tower Settings (WIP)
 - [ ] Prevent WASD Display (WIP)
+- [ ] Display Tower Range in Build Mode (WIP)
 
 # Changelog
 ### 1.1.0:
