@@ -1,7 +1,7 @@
 {
     "name": "QoLChanges",
     "version_number": "1.1.0",
-    "website_url": "",
+    "website_url": "https://github.com/TheirOwn/QoLChanges",
     "description": "Adds a bunch of quality of life updates.",
     "dependencies": [
     ]
