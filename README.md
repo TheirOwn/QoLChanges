@@ -11,7 +11,7 @@ Adds a bunch of Quality of Life Changes.
 - [ ] Prevent WASD Display (WIP)
 - [ ] Display Tower Range in Build Mode (WIP)
 
-# Priority Coloring Reference
+# Priority Coloring Reference 
 - Progress: Default Tower Color
 - Near Death: Damage Color (Red)
 - Most Health: Health Color (Green)
@@ -32,3 +32,6 @@ Adds a bunch of Quality of Life Changes.
 - Added Tower Priority defaults. (the default is the last changes made)
 ### 1.0.0:
 - Added Tower Range circles/squares on hover.
+
+# Credit
+- Tower Priority Coloring done by dmchurch.
