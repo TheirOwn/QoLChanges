@@ -113,7 +113,7 @@ namespace QolChanges
             {
                 //Plugin.ghostCircle.gameObject.transform.position = ___currentGhost.transform.position;
                 //Plugin.ghostCircle.gameObject.SetActive(true);
-                Plugin.ghostCircle.towerlessCircle(pos, 20f, false);
+                //Plugin.ghostCircle.towerlessCircle(pos, 20f, false);
             }
         }
 

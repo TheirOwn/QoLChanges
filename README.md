@@ -11,6 +11,19 @@ Adds a bunch of Quality of Life Changes.
 - [ ] Prevent WASD Display (WIP)
 - [ ] Display Tower Range in Build Mode (WIP)
 
+# Priority Coloring Reference
+- Progress: Default Tower Color
+- Near Death: Damage Color (Red)
+- Most Health: Health Color (Green)
+- Most Armor: Armor Color (Yellowish?)
+- Most Shield: Shield Color (Grey)
+- Least Health: Darkened Health Color (Dark Green)
+- Least Armor: Darkened Armor Color
+- Least Shield: Darkened Shield Color (Dark Grey)
+- Fastest: Haste Color (Light Brown)
+- Slowest: Darkened Haste Color (Dark Brown)
+- Marked: Marked Color (Dark Red)
+
 # Changelog
 ### 1.2.0:
 - Added Tower Priority coloring (usually, of tower base).
