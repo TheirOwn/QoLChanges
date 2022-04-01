@@ -11,7 +11,7 @@ Adds a bunch of Quality of Life Changes.
 - [ ] Prevent WASD Display (WIP)
 - [ ] Display Tower Range in Build Mode (WIP)
 
-# Priority Coloring Reference
+# Priority Coloring Reference 
 - Progress: Default Tower Color
 - Near Death: Damage Color (Red)
 - Most Health: Health Color (Green)
@@ -25,6 +25,8 @@ Adds a bunch of Quality of Life Changes.
 - Marked: Marked Color (Dark Red)
 
 # Changelog
+### 1.3.0:
+-Added Tower Range Indicator while in Build Mode
 ### 1.2.0:
 - Added Tower Priority coloring (usually, of tower base).
 - Set default priorities when opening an existing tower (to copy settings)
@@ -32,3 +34,9 @@ Adds a bunch of Quality of Life Changes.
 - Added Tower Priority defaults. (the default is the last changes made)
 ### 1.0.0:
 - Added Tower Range circles/squares on hover.
+
+# Known Issues:
+- When building the first tower, the TowerUI flashes onscreen for 1 frame before it updates and hides itself.
+
+# Credit
+- Tower Priority Coloring done by dmchurch.
