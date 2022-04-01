@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace QolChanges
 {
-    [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+    [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, "1.3.0")]
     [BepInProcess("Rogue Tower.exe")]
     public class Plugin : BaseUnityPlugin
     {
@@ -18,6 +18,7 @@ namespace QolChanges
         public static List<Tuple<TowerUI, VariablesTowerUI>> VariablesTowerUIDict = new List<Tuple<TowerUI, VariablesTowerUI>>();
         public static Dictionary<TowerType, Tower.Priority[]> defaultPriorityDict = new Dictionary<TowerType, Tower.Priority[]>();
         public static TowerUI ghostCircle;
+        public static List<TowerType> SquareTowers = new List<TowerType>() {TowerType.Frost, TowerType.Encampment};
 
         private void Awake()
         {
@@ -33,6 +34,7 @@ namespace QolChanges
             Harmony harmony = new Harmony(PluginInfo.PLUGIN_GUID);
             harmony.PatchAll(typeof(UIManagerPatches));
             harmony.PatchAll(typeof(TowerPatches));
+            harmony.PatchAll(typeof(TowerUIPatches));
             harmony.PatchAll(typeof(BuildingManagerPatches));
         }
 
@@ -100,37 +102,55 @@ namespace QolChanges
         }
     }
 
-
+    [HarmonyPatch(typeof(TowerUI))]
+    public class TowerUIPatches
+    {
+        [HarmonyPatch("SetStats")]
+        [HarmonyPrefix]
+        /// <summary>
+        /// Stops the SetStats call if the _myTower is null (if its a "towerlessCircle" function call).
+        /// </summary>
+        public static bool SetStatsPatch(TowerUI __instance, Tower _myTower)
+        {
+            return _myTower != null;
+        }
+    }
 
     [HarmonyPatch(typeof(BuildingManager))]
     public class BuildingManagerPatches
     {
         [HarmonyPatch("DisplayGhost")]
         [HarmonyPostfix]
-        public static void DisplayGhost(BuildingManager __instance, Vector3 pos, string text, GameObject ___currentGhost)
+        // Display the building ghost. Called per frame. Calculates the range of the tower at `pos` and draws a circle.
+        public static void DisplayGhost(BuildingManager __instance, Vector3 pos, string text, GameObject ___currentGhost, GameObject ___thingToBuild)
         {
-            if (Plugin.ghostCircle != null)
+            if (___currentGhost.activeInHierarchy)
             {
-                //Plugin.ghostCircle.gameObject.transform.position = ___currentGhost.transform.position;
-                //Plugin.ghostCircle.gameObject.SetActive(true);
-                //Plugin.ghostCircle.towerlessCircle(pos, 20f, false);
+                Tower tower = ___thingToBuild.GetComponent<Tower>();
+                if (tower == null)
+                    return;
+                Plugin.ghostCircle.towerlessCircle(pos, tower);
             }
+            
         }
-
+         
         [HarmonyPatch("EnterBuildMode")]
         [HarmonyPostfix]
+        /// <summary>
+        /// Hide the ghostCircle UI if it is active.
+        /// </summary>
+
         public static void EnterBuildMode(BuildingManager __instance, GameObject objectToBuild, TowerType type)
         {
-            Tower tower = objectToBuild.GetComponent<Tower>();
             if (Plugin.ghostCircle == null)
             {
-                Plugin.Log.LogInfo("ghostCircle made");
+                Tower tower = objectToBuild.GetComponent<Tower>();
+                Plugin.Log.LogInfo("Circle being made");
                 GameObject prefabUI = (GameObject)tower.GetType().GetField(
-                        "towerUI", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(tower);
-                Plugin.ghostCircle = Object.Instantiate<GameObject>(prefabUI, tower.transform.position, Quaternion.identity).GetComponent<TowerUI>();
+                    "towerUI", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(tower);
+                Plugin.ghostCircle = Object.Instantiate<GameObject>(prefabUI, objectToBuild.transform.position, Quaternion.identity).GetComponent<TowerUI>();
+                Plugin.ghostCircle.gameObject.SetActive(false);
             }
-            Plugin.Log.LogInfo("Set ghost circle tower");
-            Plugin.ghostCircle.GetType().GetField("myTower", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(Plugin.ghostCircle, tower);
             Plugin.ghostCircle.gameObject.SetActive(false);
         }
 
@@ -139,10 +159,11 @@ namespace QolChanges
         public static void HideGhost()
         {
             if (Plugin.ghostCircle != null)
+            {
                 Plugin.ghostCircle.gameObject.SetActive(false);
+                Plugin.Log.LogInfo("Hiding Ghost");
+            }
         }
-
-
     }
 
     /// <summary>
@@ -157,6 +178,7 @@ namespace QolChanges
         {
             for (int i = 0; i < __instance.priorities.Length; i++)
             {
+                // sets the priorities on update.
                 __instance.priorities[i] = Plugin.defaultPriorityDict[__instance.towerType][i];
             }
             UpdateRendering(__instance);
@@ -251,7 +273,6 @@ namespace QolChanges
                         }
                         else
                         {
-                            //Plugin.Log.LogInfo("TowerUI not retrieved.");
                             return true;
                         }
                     }
@@ -373,11 +394,21 @@ namespace QolChanges
             drawCircle.Invoke(__instance, new object[0]);
         }
 
-        public static void towerlessCircle(this TowerUI __instance, Vector3 pos, float range, bool squareUI)
+        /// <summary>
+        /// Draws the range of a tower without needing the Tower object to be instantiated.
+        /// </summary>
+        /// <param name="__instance"></param>
+        /// <param name="pos"> Where the circle is to be drawn</param>
+        /// <param name="tower"> A generic tower object. </param>
+        public static void towerlessCircle(this TowerUI __instance, Vector3 pos, Tower tower) //float range, bool squareUI)
         {
+            int heightBonus = (int)Mathf.Round(pos.y * 3f - 1f);
+            float baseRange = (float)tower.GetType().GetField("baseRange", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(tower);
+            float range = baseRange + (float)heightBonus / 2f + TowerManager.instance.GetBonusRange(tower.towerType);
             LineRenderer linePrefab = (LineRenderer) __instance.GetType().GetField("line", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
             LineRenderer line = Object.Instantiate<LineRenderer>(linePrefab, pos, Quaternion.identity).GetComponent<LineRenderer>();
-            if (squareUI)
+
+            if (Plugin.SquareTowers.Contains(tower.towerType))
             {
                 range += 0.5f;
                 line.SetVertexCount(5);
@@ -389,22 +420,31 @@ namespace QolChanges
                 line.SetPosition(2, new Vector3(-range, 0f, -range) + position);
                 line.SetPosition(3, new Vector3(-range, 0f, range) + position);
                 line.SetPosition(4, new Vector3(range, 0f, range) + position);
-                return;
-            } 
-            line.SetVertexCount(61);
-            line.useWorldSpace = true;
-            Vector3 a = new Vector3(0f, 0f, 0f);
-            Vector3 position2 = pos;
-            position2.y = 0.4f;
-            float num2 = 0f;
-            for (int i = 0; i < 61; i++)
-            {
-                a.x = Mathf.Cos(0.017453292f * num2) * range;
-                a.z = Mathf.Sin(0.017453292f * num2) * range;
-                line.SetPosition(i, a + position2);
-                num2 += 6f;
             }
+            else
+            {
+                line.SetVertexCount(61);
+                line.useWorldSpace = true;
+                Vector3 a = new Vector3(0f, 0f, 0f);
+                Vector3 position2 = pos;
+                position2.y = 0.4f;
+                float num2 = 0f;
+                for (int i = 0; i < 61; i++)
+                {
+                    a.x = Mathf.Cos(0.017453292f * num2) * range;
+                    a.z = Mathf.Sin(0.017453292f * num2) * range;
+                    line.SetPosition(i, a + position2);
+                    num2 += 6f;
+                }
+            }
+            
             line.gameObject.SetActive(true);
+            // hides all except the line renderer
+            foreach (Transform child in __instance.gameObject.transform)
+            {
+                if (child.GetComponent<LineRenderer>() == null)
+                    child.gameObject.SetActive(false);
+            }
         }
     }
 }
