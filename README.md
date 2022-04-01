@@ -7,9 +7,10 @@ Adds a bunch of Quality of Life Changes.
 - [X] Default Tower Settings
 - [X] Priority Coloring of Towers
 - [X] Copy Tower Settings (to new towers of the same type)
-- [ ] Copy/Paste Tower Settings (WIP)
+- [X] Copy/Paste Tower Settings
+- [X] Display Tower Range in Build Mode
 - [ ] Prevent WASD Display (WIP)
-- [ ] Display Tower Range in Build Mode (WIP)
+
 
 # Priority Coloring Reference 
 - Progress: Default Tower Color
@@ -25,6 +26,9 @@ Adds a bunch of Quality of Life Changes.
 - Marked: Marked Color (Dark Red)
 
 # Changelog
+### 1.4.0:
+- Copy and Paste via Ctrl + c and Ctrl + v copies/ pastes priorities when viewing tower UI.
+- Fixed Issue where Tower UI flashes for 1 frame.
 ### 1.3.0:
 - Added Tower Range Indicator while in Build Mode
 ### 1.2.0:
@@ -36,7 +40,7 @@ Adds a bunch of Quality of Life Changes.
 - Added Tower Range circles/squares on hover.
 
 # Known Issues:
-- When building the first tower, the TowerUI flashes onscreen for 1 frame before it updates and hides itself.
+- [1.3.0 only] When building the first tower, the TowerUI flashes onscreen for 1 frame before it updates and hides itself. 
 
 # Credit
 - Tower Priority Coloring done by dmchurch.
