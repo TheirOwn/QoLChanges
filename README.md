@@ -26,7 +26,7 @@ Adds a bunch of Quality of Life Changes.
 
 # Changelog
 ### 1.3.0:
--Added Tower Range Indicator while in Build Mode
+- Added Tower Range Indicator while in Build Mode
 ### 1.2.0:
 - Added Tower Priority coloring (usually, of tower base).
 - Set default priorities when opening an existing tower (to copy settings)
